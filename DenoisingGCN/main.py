@@ -166,7 +166,7 @@ def loop_dataset(g_list, classifier, sample_idxes,
         total_iters = (len(sample_idxes) + (bsize - 1) * (optimizer is None)) // bsize
     else:
         total_iters = 1
-    pbar = tqdm(range(total_iters), unit='batch')
+    pbar = tqdm(range(total_iters), unit='batch')#进度条
     all_targets = []
     all_scores = []
 

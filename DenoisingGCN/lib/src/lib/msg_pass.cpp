@@ -1,6 +1,6 @@
 #include "/home/xujiarong/baseline/pytorch_DGCNN/lib/include/msg_pass.h"
 
-void n2n_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
+void n2n_construct(GraphStruct* graph, long long* idxes, Dtype* vals)//Dtype float
 {
     int nnz = 0;    
     long long* row_ptr = idxes;
@@ -13,14 +13,14 @@ void n2n_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
 		{            
             vals[nnz] = cfg::msg_average ? 1.0 / list.size() : 1.0;
             row_ptr[nnz] = i;
-			col_ptr[nnz] = list[j].second;
+			col_ptr[nnz] = list[j].second;//边的终点
 			nnz++;
 		}
 	}
 	assert(nnz == (int)graph->num_edges);
 }
 
-void e2n_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
+void e2n_construct(GraphStruct* graph, long long* idxes, Dtype* vals)//edge to node
 {
     int nnz = 0;
     long long* row_ptr = idxes;
@@ -33,7 +33,7 @@ void e2n_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
 		{
 			vals[nnz] = cfg::msg_average ? 1.0 / list.size() : 1.0;
 			row_ptr[nnz] = i;
-			col_ptr[nnz] = list[j].first;
+			col_ptr[nnz] = list[j].first;//first 是idx,即边的标识
 			nnz++;			
 		}
 	}
@@ -90,7 +90,7 @@ void subg_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
     long long* row_ptr = idxes;
 	long long* col_ptr = idxes + graph->num_nodes;
 
-	for (uint i = 0; i < graph->num_subgraph; ++i)
+	for (uint i = 0; i < graph->num_subgraph; ++i)//子图构造
 	{
 		auto& list = graph->subgraph->head[i];
 		for (size_t j = 0; j < list.size(); ++j)
@@ -104,7 +104,7 @@ void subg_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
 	assert(nnz == (int)graph->num_nodes);	
 }
 
-void noise_construct(GraphStruct* graph, long long* idxes, Dtype* vals)
+void noise_construct(GraphStruct* graph, long long* idxes, Dtype* vals)//噪声边?
 {
     int nnz = 0;
     long long* row_ptr = idxes;

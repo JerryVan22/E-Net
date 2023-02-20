@@ -7,8 +7,8 @@ import numpy as np
 import random
 from tqdm import tqdm
 import os, sys, pdb, math
-import cPickle as cp
-#import _pickle as cp  # python3 compatability
+# import cPickle as cp
+import _pickle as cp  # python3 compatability
 import networkx as nx
 import argparse
 import scipy.io as sio
@@ -27,14 +27,16 @@ import random
 import node2vec
 import multiprocessing as mp
 
+
+#拆封数据集
 def sample_train_val_test(edges, edges_clean, net, split_ratio=[8,1,1], missing_ratio=0.1, neg_pos_ratio=5,
                           train_pos=None, test_pos=None, max_train_num=None):
     edges = list(edges)
     edges_clean = list(edges_clean)
     # mimic missing links
-    existing_link_num = int(len(edges) * missing_ratio)
+    existing_link_num = int(len(edges) * missing_ratio) #缺失边的数量
     # sample positive links if not specified
-    pos, neg = [], []
+    pos, neg = [], []# pos:真的缺失链路,假的缺失链路()
     if train_pos is None or test_pos is None:
         perm = random.sample(range(len(edges)), existing_link_num)
         edges_filter = [edges[i] for i in perm]
@@ -42,7 +44,7 @@ def sample_train_val_test(edges, edges_clean, net, split_ratio=[8,1,1], missing_
             if e in edges_clean:
                 pos.append(e)
             else:
-                neg.append(e)
+                neg.append(e)#添加噪声链路
     pos_num = len(pos)
 
     train_pos_num = int(math.ceil(pos_num * split_ratio[0] / np.sum(split_ratio)))
@@ -51,7 +53,7 @@ def sample_train_val_test(edges, edges_clean, net, split_ratio=[8,1,1], missing_
     while len(neg) < (train_pos_num + neg_pos_ratio*(pos_num-train_pos_num)):
         i, j = random.randint(0, n-1), random.randint(0, n-1)
         if i < j and net[i, j] == 0:
-            neg.append((i, j))
+            neg.append((i, j)) #随机添加不存在的边到neg中
         else:
             continue
     neg_num = len(neg)
@@ -70,7 +72,7 @@ def sample_train_val_test(edges, edges_clean, net, split_ratio=[8,1,1], missing_
                [p[1] for p in neg[train_pos_num:train_pos_num+neg_pos_ratio*val_pos_num]])
     test_neg = ([p[0] for p in neg[train_pos_num+neg_pos_ratio*val_pos_num:]],
                 [p[1] for p in neg[train_pos_num+neg_pos_ratio*val_pos_num:]])
-    train_val_test = {'train': [train_pos, train_neg], 'val': [val_pos, val_neg], 'test': [test_pos, test_neg]}
+    train_val_test = {'train': [train_pos, train_neg], 'val': [val_pos, val_neg], 'test': [test_pos, test_neg]}#
 
     return train_val_test, pos
 
@@ -294,7 +296,7 @@ def generate_node2vec_embeddings(A, emd_size=128, negative_injection=False, trai
         A = A.copy()
         A[row, col] = 1  # inject negative train
         A[col, row] = 1  # inject negative train
-    nx_G = nx.from_scipy_sparse_matrix(A)
+    nx_G = nx.from_scipy_sparse_array(A)
     G = node2vec.Graph(nx_G, is_directed=False, p=1, q=1)
     G.preprocess_transition_probs()
     walks = G.simulate_walks(num_walks=10, walk_length=80)

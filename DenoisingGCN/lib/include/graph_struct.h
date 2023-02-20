@@ -23,7 +23,7 @@ public:
 		/**
 		 * @brief      add an entry to the head_id-th linked list with content
 		 *
-		 * @param[in]  head_id  The linked list identifier
+		 * @param[in]  head_id  The linked list identifier 标识
 		 * @param[in]  content  The content to be append
 		 */
 		void AddEntry(int head_id, T content);
@@ -38,7 +38,7 @@ public:
 		/**
 		 * header array size
 		 */
-		int n;
+		int n;//大小
 
 		/**
 		 * array of linked list (vector of vector)
@@ -50,11 +50,11 @@ private:
 		 * capacity of the head vector; when doing resize, we won't clean up the head,
 		 * rather, we will only increat the size when ncap is not enough; 
 		 */
-		int ncap;
+		int ncap;//容量
 };
 
 /**
- * @brief      represents a (directed) graph
+ * @brief      represents a (directed) graph 有向图
  */
 class GraphStruct
 {
@@ -76,7 +76,7 @@ public:
 	 * @param[in]  x     edge start
 	 * @param[in]  y     edge end
 	 */
-	void AddEdge(int idx, int x, int y);
+	void AddEdge(int idx, int x, int y);//添加一条边,添加必须是让边的标识升序添加
 
 	/**
 	 * @brief      Adds an edge.
@@ -85,7 +85,7 @@ public:
 	 * @param[in]  x     edge start
 	 * @param[in]  y     edge end
 	 */
-	void AddNoise(int idx, int x, int y);
+	void AddNoise(int idx, int x, int y);//添加一条噪声边
 
 	/**
 	 * @brief      Add a node to the graph
@@ -104,7 +104,7 @@ public:
 	void Resize(unsigned _num_subgraph, unsigned _num_nodes = 0);
 
 	/**
-	 * adjacent list representation; stores out going edges of a node
+	 * adjacent list representation; stores out going edges of a node 邻接表形式
 	 */
 	LinkedTable< std::pair<int, int> > *out_edges;
 	/**
@@ -117,7 +117,7 @@ public:
 	 */
 	LinkedTable< std::pair<int, int> > *out_noises;
 	/**
-	 * adjacent list representation; stores incoming edges of a node
+	 * adjacent list representation; stores incoming edges of a node 
 	 */
 	LinkedTable< std::pair<int, int> > *in_noises;
 
@@ -130,12 +130,12 @@ public:
 	/**
 	 * edge list ({x->y}), where the position in the edge_list corresponds to the edge index
 	 */
-	std::vector< std::pair<int, int> > edge_list;
+	std::vector< std::pair<int, int> > edge_list; //存储实际边
 
 	/**
 	 * edge list ({x->y}), where the position in the edge_list corresponds to the edge index
 	 */
-	std::vector< std::pair<int, int> > noise_list;
+	std::vector< std::pair<int, int> > noise_list; //存储噪声边
 
 	/**
 	 * total # nodes
@@ -144,7 +144,7 @@ public:
 	/**
 	 * total # edges
 	 */
-	unsigned num_edges;
+	unsigned num_edges;//边的总数量
 	/**
 	 * # subgraphs
 	 */

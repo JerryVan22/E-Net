@@ -105,23 +105,23 @@ args.file_dir = os.path.dirname(os.path.realpath('__file__'))
 args.data_dir = os.path.join(args.file_dir, 'data/{}.mat'.format(args.data_name))
 print("input: {}".format(args.data_dir))
 data = sio.loadmat(args.data_dir)
-label = data['label']
+label = data['label'] #获取label
 net_c = data['net']   # input: clean network (not consider missing links)
 
 if args.data_name == 'cora' or args.data_name == 'citeseer' or args.data_name == 'pubmed':
     data = sio.loadmat(os.path.join(args.file_dir, 'data/{}_n0.1.mat'.format(args.data_name)))
 else:
     data = sio.loadmat(os.path.join(args.file_dir, 'data/{}.mat'.format(args.data_name)))
-net = data['net']   # input: flawed network
-node_num = net.shape[0]
+net = data['net']   # input: flawed network 缺陷网络
+node_num = net.shape[0] #获取节点数量
 
 # edges; clean edges; noisy edges
-edges = nx.from_scipy_sparse_matrix(net).edges()
-edges_clean = nx.from_scipy_sparse_matrix(net_c).edges()
+edges = nx.from_scipy_sparse_matrix(net).edges() #带噪声的边
+edges_clean = nx.from_scipy_sparse_matrix(net_c).edges() #无噪声的边
 print('# of nodes: {}'.format(node_num))
 print('# of clean/all edges: {}/{}'.format(len(edges_clean), len(edges)))
 
-num_noisy_edge = len(edges) - len(edges_clean)
+num_noisy_edge = len(edges) - len(edges_clean) #获取噪声边的数量
 
 if data.has_key('group'):
     # load node attributes (here a.k.a. node classes)
@@ -143,16 +143,16 @@ print('MISSING LINK PREDICTION-- # train_pos: %d, # train_neg: %d, # val_pos: %d
     len(train_val_test['train'][0][0]), len(train_val_test['train'][1][0]), len(train_val_test['val'][0][0]),
     len(train_val_test['val'][1][0]), len(train_val_test['test'][0][0]), len(train_val_test['test'][1][0])))
 
-'''Train and apply classifier'''
+'''Train and apply classifier'''#训练分类器
 A = net.copy()  # the observed network
 # mask missing links
-for key, value in train_val_test.items():
+for key, value in train_val_test.items():#在A的测试集上测试
     A[value[0][0], value[0][1]] = 0
     A[value[0][1], value[0][0]] = 0
 
 # construct noisy link candidate
 pos_noisy_links = [e for e in edges if e not in edges_clean and e[::-1] not in edges_clean]
-remain_clean_links = [e for e in edges_clean if e not in missing_links and e[::-1] not in missing_links]
+remain_clean_links = [e for e in edges_clean if e not in missing_links and e[::-1] not in missing_links]#既不是缺失边也不是噪声边
 perm = random.sample(range(len(remain_clean_links)), len(pos_noisy_links) * args.neg_pos_ratio)
 neg_noisy_links = [remain_clean_links[i] for i in perm]
 noisy_candidate = pos_noisy_links + neg_noisy_links
@@ -183,7 +183,7 @@ else:
     graphs, max_n_label = links2subgraphs(A, Identity, train_val_test, args.hop,
                                           args.max_nodes_per_hop, node_information, edge_information,
                                           args.lazy_subgraph, args.multi_subgraph,
-                                          args.num_node_to_walks, args.num_walks, args.mp)
+                                          args.num_node_to_walks, args.num_walks, args.mp)#获取子图
     # pickle.dump([graphs, max_n_label], open(graph_fn, 'w'))
 
 train_graphs, val_graphs, test_graphs = graphs['train'], graphs['val'], graphs['test']
@@ -266,7 +266,7 @@ early_stop = EarlyStop()
 for epoch in range(cmd_args.num_epochs):
     t0 = time.time()
 
-    random.shuffle(train_idxes)
+    random.shuffle(train_idxes) #洗牌算法打乱
     avg_loss, _ = loop_dataset(train_graphs, classifier, train_idxes, optimizer=optimizer)
     if not cmd_args.printAUC:
         avg_loss[2] = 0.0

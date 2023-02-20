@@ -30,7 +30,7 @@ void LinkedTable<T>::Resize(int new_n)
 {
 	if (new_n > ncap)
 	{
-		ncap = std::max(ncap * 2, new_n);
+		ncap = std::max(ncap * 2, new_n);//扩容
 		head.resize(ncap);
 	}
 	n = new_n;
